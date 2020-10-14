@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/team4yf/yf-fpm-server-go/fpm"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -151,8 +152,9 @@ func init() {
 					}
 					fpmApp.Logger.Debugf("req: %#v", req)
 					collection := db.Collection(req.Collection)
+					id, _ := primitive.ObjectIDFromHex(req.ID)
 					res, err := collection.DeleteOne(ctx, bson.M{
-						"_id": req.ID,
+						"_id": id,
 					})
 					if err != nil {
 						return nil, err
@@ -167,8 +169,9 @@ func init() {
 					}
 					fpmApp.Logger.Debugf("req: %#v", req)
 					collection := db.Collection(req.Collection)
+					id, _ := primitive.ObjectIDFromHex(req.ID)
 					res, err := collection.UpdateOne(ctx, bson.M{
-						"_id": req.ID,
+						"_id": id,
 					}, bson.M{
 						"$set": req.Row,
 					})
