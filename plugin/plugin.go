@@ -93,7 +93,6 @@ func init() {
 						if err = cur.Decode(&result); err != nil {
 							return
 						}
-						// do something with result....
 						list = append(list, &result)
 					}
 					if err = cur.Err(); err != nil {
