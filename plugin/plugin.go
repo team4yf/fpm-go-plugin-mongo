@@ -48,7 +48,11 @@ func init() {
 		Name: "fpm-plugin-mongo",
 		V:    "0.0.1",
 		Handler: func(fpmApp *fpm.Fpm) {
-			config := mongoConfig{}
+			config := mongoConfig{
+				URI:  "mongodb://localhost:27017",
+				Pool: 1,
+				Db:   "test",
+			}
 			if fpmApp.HasConfig("mongo") {
 				if err := fpmApp.FetchConfig("mongo", &config); err != nil {
 					panic(err)
