@@ -19,10 +19,10 @@ type mongoConfig struct {
 
 type queryReq struct {
 	Collection string
-	Limit      int8
+	Limit      int64
 
 	Sort      string
-	Skip      int32
+	Skip      int64
 	Condition bson.M
 }
 
@@ -87,7 +87,25 @@ func init() {
 					collection := db.Collection(req.Collection)
 					list := make([]*bson.M, 0)
 
-					cur, err := collection.Find(ctx, req.Condition)
+					var opts []*options.FindOptions
+					if req.Limit > 0 {
+						opts = append(opts, &options.FindOptions{
+							Limit: &req.Limit,
+							Skip:  &req.Skip,
+						})
+					}
+					if req.Sort != "" {
+						asc := req.Sort[len(req.Sort)-1:]
+						field := req.Sort[0 : len(req.Sort)-1]
+						ascOpr := -1
+						if asc == "+" {
+							ascOpr = 1
+						}
+						opts = append(opts, &options.FindOptions{
+							Sort: bson.M{field: ascOpr},
+						})
+					}
+					cur, err := collection.Find(ctx, req.Condition, opts...)
 					if err != nil {
 						return nil, err
 					}
@@ -113,7 +131,24 @@ func init() {
 					fpmApp.Logger.Debugf("req: %#v", req)
 					collection := db.Collection(req.Collection)
 					one := make(map[string]interface{})
-					err = collection.FindOne(ctx, req.Condition).Decode(&one)
+					var opts []*options.FindOneOptions
+					if req.Skip > 0 {
+						opts = append(opts, &options.FindOneOptions{
+							Skip: &req.Skip,
+						})
+					}
+					if req.Sort != "" {
+						asc := req.Sort[len(req.Sort)-1:]
+						field := req.Sort[0 : len(req.Sort)-1]
+						ascOpr := -1
+						if asc == "+" {
+							ascOpr = 1
+						}
+						opts = append(opts, &options.FindOneOptions{
+							Sort: bson.M{field: ascOpr},
+						})
+					}
+					err = collection.FindOne(ctx, req.Condition, opts...).Decode(&one)
 					if err != nil {
 						return
 					}
