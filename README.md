@@ -27,4 +27,7 @@ fpmApp.Execute("mongo.demo", &fpm.BizParam{
     "body":    "ok",
 })
 
+
+client := fpm.Get("MongoClient", nil)
+db := fpm.Get("MongoDb", nil)
 ```

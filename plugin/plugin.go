@@ -77,6 +77,9 @@ func init() {
 			}
 			db := client.Database(config.Db)
 
+			// export the mongo var
+			fpm.Set("MongoClient", client)
+			fpm.Set("MongoDb", db)
 			fpmApp.AddBizModule("mongo", &fpm.BizModule{
 				"find": func(param *fpm.BizParam) (data interface{}, err error) {
 					req := queryReq{}
